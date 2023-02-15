@@ -131,3 +131,4 @@ dmypy.json
 
 # Crawler files
 crawler/raw_files/*
+parser/parsed_files/*
