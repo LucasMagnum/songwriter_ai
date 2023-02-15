@@ -1,7 +1,7 @@
-import os
-import logging
-
 import asyncio
+import logging
+import os
+
 import aiofiles
 from aiofiles import os as aiofiles_os
 from bs4 import BeautifulSoup

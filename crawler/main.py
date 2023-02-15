@@ -1,14 +1,14 @@
 """
 Crawl Genius.com extract lyrics from a specific Artist.
 """
+import asyncio
 import logging
 from collections.abc import Callable
 from typing import Any
 
+import aiofiles
 import aiohttp
-import asyncio
-from aiofiles import open, os
-
+from aiofiles import os as aiofiles_os
 
 base_api_url = "https://genius.com/api"
 
@@ -27,9 +27,7 @@ async def crawl_songs(artists_ids: list[str]) -> dict[str]:
                 continue
 
             song_lyrics = await get_lyrics_for_song_id(song["url"])
-
             await save_lyrics_to_disk(artist_id, song["id"], song_lyrics)
-            # lyrics[song["full_title"]] = await parse_lyrics_from_song(song_lyrics)
 
     return lyrics
 
@@ -66,19 +64,19 @@ async def get_lyrics_for_song_id(lyrics_url: str) -> str:
 
 async def is_song_already_saved(artist_id: str, song_id: str):
     song_path = f"raw_files/{artist_id}/{song_id}"
-    return await os.path.exists(song_path)
+    return await aiofiles_os.path.exists(song_path)
 
 
 async def save_lyrics_to_disk(artist_id: str, song_id: str, content: str):
     artist_path = f"raw_files/{artist_id}"
 
-    if not await os.path.exists("raw_files"):
-        await os.mkdir(artist_path)
+    if not await aiofiles_os.path.exists("raw_files"):
+        await aiofiles_os.mkdir(artist_path)
 
-    if not await os.path.exists(artist_path):
-        await os.mkdir(artist_path)
+    if not await aiofiles_os.path.exists(artist_path):
+        await aiofiles_os.mkdir(artist_path)
 
-    async with open(f"raw_files/{artist_id}/{song_id}", "w") as raw_file:
+    async with aiofiles.open(f"raw_files/{artist_id}/{song_id}", "w") as raw_file:
         await raw_file.writelines(content)
 
 
@@ -110,7 +108,7 @@ async def get_text(path: str) -> str:
 
 if __name__ == "__main__":
     artists_ids = [
-        # "214301", # NF songs
+        "214301", # NF songs
         "45",  # Eminem
     ]
     logging.basicConfig(format="[%(levelname)s] => %(message)s", level=logging.DEBUG)
